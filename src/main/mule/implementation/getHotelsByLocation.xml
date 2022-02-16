@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getHotelsByLocation" doc:id="d75f901c-aa20-46db-b3ec-d0014c8f4296" >
+		<logger level="INFO" doc:name="Request Received" doc:id="6a6c1d1c-7a94-4fe4-9998-9fc110d7f663" message="#['Starting the System API for HotelDetails' ++ now()]"/>
+		<db:select doc:name="Retrieve hotels from DB based on location" doc:id="6cb5ef89-cbf6-4f53-b32c-0bbd7c3a35e0" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * FROM TajGroupHotels
+WHERE Location = :location]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	location: payload.location
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Hotel Array to XML" doc:id="4eb95c18-a48e-4965-903e-370cbfbc9d5d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 http://www.tajhotels.com/hotels/
+---
+{
+	getHotelsResponse: {
+		(payload map ( payload01 , indexOfPayload01 ) -> {
+			hotel: {
+				hotelID: payload01.HotelID,
+				hotelName: payload01.HotelName,
+				location: payload01.Location,
+				noOfRooms: payload01.NoOfRooms,
+				roomType: payload01.RoomType,
+				price: payload01.Price,
+				noOfPeople: payload01.NoOfPeople
+			}
+		})
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Response Received" doc:id="55e40dfb-eafe-4fa8-9f0d-243f184937c4" message="#['Ending the System API for HotelDetails' ++ now()]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="124a089c-e675-41d1-a6a3-ccaba1fec16c" type="HTTP:CONNECTIVITY, HTTP:NOT_FOUND, HTTP:RETRY_EXHAUSTED, HTTP:SERVICE_UNAVAILABLE">
+				<set-payload value="#['Server is down, please try again after sometime']" doc:name="Connectivity, Resource not found error, Retry exhausted and Service unavailable error" doc:id="e7814cf5-98e5-4a9c-a2fc-f7b0d6a8f0d0" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

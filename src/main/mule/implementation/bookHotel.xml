@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="bookHotel" doc:id="749a98c7-7d42-472c-afc5-591a3c400889" >
+		<logger level="INFO" doc:name="Request Received" doc:id="4d22a808-e3d6-4476-b4af-49438b5ee15a" message="#['Starting the System API for Book My Flights API ' ++ now()]"/>
+		<db:insert doc:name="Insert data in DB to book a hotel" doc:id="51c8702f-c118-479c-be29-ed1ce61d5701" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into Bookings (HotelName, Location, NoOfRooms, RoomType, Price, NoOfPeople, CheckIn, CheckOut, HotelID) 
+values (:hotelName, :location, :noOfRooms, :roomType, :price, :noOfPeople, :checkIn, :checkOut, :hotelID);
+]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	hotelName: payload.hotelName,
+	location: payload.location,
+	noOfRooms: payload.noOfRooms,
+	roomType: payload.roomType,
+	price: payload.price,
+	noOfPeople: payload.noOfPeople,
+	checkIn: payload.checkIn,
+	checkOut: payload.checkOut,
+	hotelID: payload.hotelID
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Booking Successful Message" doc:id="98350aba-fbd0-41c8-b3da-414705c93365" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	"message": "Hotel booked successfully!"
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Response Received" doc:id="e6bbb41e-09be-4f9a-a04b-6c3a2db17716" message="#['Ending the System API for Book My Flights API ' ++ now()]"/>
+		<error-handler >
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f39ef0fd-1079-4e75-8ebc-8bb01434b2c9" type="HTTP:CONNECTIVITY, HTTP:NOT_FOUND, HTTP:RETRY_EXHAUSTED, HTTP:SERVICE_UNAVAILABLE">
+				<set-payload value="#['Server is down, please try again after sometime']" doc:name="Connectivity, Resource not found error, Retry exhausted and Service unavailable error" doc:id="ad0fa764-d6a9-4e74-8dae-0f2ecf4a1723" />
+			</on-error-propagate>
+		</error-handler>
+	</flow>
+</mule>

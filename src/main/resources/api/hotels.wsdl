@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<wsdl:definitions xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://www.tajhotels.com/hotels/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" name="hotels" targetNamespace="http://www.tajhotels.com/hotels/">
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://www.tajhotels.com/hotels/">
+      <xsd:element name="getHotels">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="location" type="xsd:string"  maxOccurs="1" minOccurs="1"></xsd:element>
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="getHotelsResponse">
+      	<xsd:complexType>
+      		<xsd:sequence>
+      			<xsd:element name="hotelID" type="xsd:int"></xsd:element>
+      			<xsd:element name="hotelName" type="xsd:string" />
+	          	<xsd:element name="location" type="xsd:string"></xsd:element>
+	          	<xsd:element name="noOfRooms" type="xsd:int"></xsd:element>
+	          	<xsd:element name="roomType" type="xsd:string"></xsd:element>
+	          	<xsd:element name="price" type="xsd:double"></xsd:element>
+	          	<xsd:element name="noOfPeople" type="xsd:int"></xsd:element>     	
+      		</xsd:sequence>
+      	</xsd:complexType>
+      </xsd:element>
+      <xsd:element name="bookHotel">
+        <xsd:complexType>
+          <xsd:sequence>
+          	<xsd:element name="hotelName" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+          	<xsd:element name="location" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+          	<xsd:element name="noOfRooms" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+          	<xsd:element name="roomType" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+          	<xsd:element name="price" type="xsd:double"  maxOccurs="1" minOccurs="1"></xsd:element>
+          	<xsd:element name="noOfPeople" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+     		<xsd:element name="checkIn" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>
+     		<xsd:element name="checkOut" type="xsd:string" maxOccurs="1" minOccurs="1"></xsd:element>     		     		
+     		<xsd:element name="bookingId" type="xsd:string" maxOccurs="1" minOccurs="0"></xsd:element>
+     		<xsd:element name="hotelID" type="xsd:int" maxOccurs="1" minOccurs="1"></xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="bookHotelResponse">
+        <xsd:complexType>
+          <xsd:sequence>
+          	<xsd:element name="message" type="xsd:string"></xsd:element>
+          	<xsd:element name="bookingId" type="xsd:int"></xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>   
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="getHotelsRequest">
+  	<wsdl:part name="parameters" element="tns:getHotels"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getHotelsResponse">
+  	<wsdl:part name="parameters" element="tns:getHotelsResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="bookHotelRequest">
+    <wsdl:part element="tns:bookHotel" name="parameters"/>
+  </wsdl:message>
+  <wsdl:message name="bookHotelResponse">
+    <wsdl:part element="tns:bookHotelResponse" name="parameters"/>
+  </wsdl:message> 
+  <wsdl:portType name="hotels">
+  	<wsdl:operation name="getHotels">
+    	<wsdl:input message="tns:getHotelsRequest"></wsdl:input>
+    	<wsdl:output message="tns:getHotelsResponse"></wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="bookHotel">
+      <wsdl:input message="tns:bookHotelRequest"/>
+      <wsdl:output message="tns:bookHotelResponse"/>
+    </wsdl:operation>   
+  </wsdl:portType>
+  <wsdl:binding name="hotelsSOAP" type="tns:hotels">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getHotels">
+      <soap:operation soapAction="http://www.tajhotels.com/hotels/getHotels"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="bookHotel">
+      <soap:operation soapAction="http://www.tajhotels.com/hotels/bookHotel"/>
+      <wsdl:input>
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>  
+  </wsdl:binding>
+  <wsdl:service name="hotels">
+    <wsdl:port binding="tns:hotelsSOAP" name="hotelsSOAP">
+      <soap:address location="http://www.example.org/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

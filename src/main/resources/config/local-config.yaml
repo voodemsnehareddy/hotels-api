@@ -1,0 +1,10 @@
+http:
+  host: "localhost"
+  port: "8081"
+  
+db:
+  host: "book-my-holiday.cinqbi7mgai2.us-east-1.rds.amazonaws.com"
+  port: "3306"
+  username: "admin"
+  password: "Apisero2022"
+  database: "book_my_holiday"
