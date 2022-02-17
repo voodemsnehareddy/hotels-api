@@ -40,7 +40,7 @@ ns ns0 http://www.tajhotels.com/hotels/
         </ee:transform>
 		<flow-ref doc:name="getHotelsByLocation" doc:id="848eb2ac-0e6b-4123-b461-b4a0a57a34eb" name="getHotelsByLocation"/>
     </flow>
-    <flow name="bookHotel:\soapkit-config">
+    <flow name="bookHotel:\soapkit-config" doc:id="c57aec0d-ab2e-49e3-bb5c-3e6b7f3af4b6">
         <ee:transform>
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0

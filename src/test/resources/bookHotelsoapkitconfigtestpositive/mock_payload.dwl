@@ -1,0 +1,3 @@
+{
+  "message": "Hotel booked successfully!"
+}
